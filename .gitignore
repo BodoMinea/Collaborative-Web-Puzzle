@@ -4,4 +4,6 @@ build/*.css
 npm-debug.log
 *.tmp
 .browserify-cache.json
+.DS_Store
+db_server/
 data/
