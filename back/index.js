@@ -1586,20 +1586,20 @@ io.on('connection', function(socket) {
   })
 
 
-// function decodeBase64Image(dataString){
-//         var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-//         var response = {};
+function decodeBase64Image(dataString){
+        var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+        var response = {};
 
-//         if (matches.length !== 3) 
-//         {
-//           return new Error('Invalid input string');
-//         }
+        if (matches.length !== 3) 
+        {
+          return new Error('Invalid input string');
+        }
 
-//         response.type = matches[1];
-//         response.data = new Buffer(matches[2], 'base64');
+        response.type = matches[1];
+        response.data = new Buffer(matches[2], 'base64');
 
-//         return response;
-// }
+        return response;
+}
 
  socket.on('saveProfile', function(data) {
   //Handles joining and leaving rooms
@@ -1611,7 +1611,7 @@ io.on('connection', function(socket) {
         // socket.emit('practice', {boards:config.experiment.practice.map(function(b){return transformBoardForFrontend(config.puzzle.boards[b])})});
         p(err)
         allProfiles(function(err, allprof){
-          //All 16 or whatever participants have regisitered
+          //All 16 or whatever participants have registered
           if(allprof.length===config.experiment.games*2){
                 var peers = {a:{},b:{}}
                   allprof.forEach(profile => {
@@ -1634,8 +1634,7 @@ io.on('connection', function(socket) {
 
  function saveProfileImage(data, callback){
     if(data && data.image && data.name){
-      let base64ImageData = data.image.replace(/^data:image\/jpeg;base64,/, "")  //decodeBase64Image(data.image)
-      fs.writeFile('../public/img/people/'+data.name+".jpg", base64ImageData, 'base64', callback)
+      fs.writeFile('../public/img/people/'+data.name+".png", decodeBase64Image(data.image).data, function(err) { callback() });
     }else{
       callback()
     }
