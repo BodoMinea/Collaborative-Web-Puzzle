@@ -139,7 +139,7 @@ class Admin extends React.Component {
                   console.log(pay)
                   console.log(payment)
                   return (<ListGroupItem key={'p'+i}>
-                              <img width={64} height={64} src={"/img/people/"+player.name+".jpg"} alt="thumbnail" style={{borderRadius:'50%'}} className="avatar"/>
+                              <img width={64} height={64} src={"/img/people/"+player.name+".png"} alt="thumbnail" style={{borderRadius:'50%'}} className="avatar"/>
                               <b style={{marginLeft: 10, textTransform: 'capitalize'}}>{player.name}</b>
                               <b style={{marginLeft: 10, textTransform: 'capitalize', float:'right'}}>{pay && pay.pay ? "$"+pay.pay : '-'}</b>
                               <Label style={{position: 'absolute',left: 7, boxShadow: '3px 2px 7px #636363a6'}} bsStyle={player.seat ? (player.seat.indexOf('B') >-1 ? "info" : "warning") : "danger"}>{player.seat}</Label> {player.gender} , {player.education} 
@@ -188,7 +188,7 @@ class Admin extends React.Component {
                    <Label  bsStyle={rm.completed ? "success" : (!rm.completed && rm.finished ? "danger" :  "warning") }><TimeAgo date={rm.started}/></Label>
                     <div style={{float:'right'}}>
                     {rm.players.map((p,i)=><div key={'tt'+i} style={{float:'right', paddingRight:20}}>
-                      <img width={64} height={64} src={"/img/people/"+p+".jpg"} alt="thumbnail" style={{borderRadius:'50%',width:25, height:25, marginRight:10}} className="avatar"/>
+                      <img width={64} height={64} src={"/img/people/"+p+".png"} alt="thumbnail" style={{borderRadius:'50%',width:25, height:25, marginRight:10}} className="avatar"/>
                       {p}
                     </div>)}
                     </div>

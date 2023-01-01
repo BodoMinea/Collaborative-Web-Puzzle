@@ -1,12 +1,12 @@
 {	
 	"server":{
 		"dev":{
-			"apiUrl":"http://localhost:3030" //localhost
+			"apiUrl":"http://localhost:3030"
 		},
 		"prod":{
 			"apiUrl":"http://63.142.255.120:3030"
 		},
-		"host":"prod"
+		"host":"dev"
 	},
 	"AisC":true,
 	"fuzzy":["Yes - I would have solved it much better on my own","Yes - I would have solved it somewhat better on my own.","No - I think it would have stayed the same","No - I think I would have solved it somewhat worse on my own","No - I think I would have solved it much worse on my own"],

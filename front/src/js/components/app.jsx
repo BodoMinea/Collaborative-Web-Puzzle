@@ -20,7 +20,6 @@ import io from 'socket.io-client'
 // import TimeAgo from 'react-timeago'
 import NumericInput from 'react-numeric-input';
 import ReactCountdownClock from 'react-countdown-clock';
-import Webcam from 'react-webcam';
 
 import Admin from './admin.jsx';
 
@@ -35,6 +34,9 @@ class PapayaApp extends React.Component {
 
 	constructor(props){
     super(props);
+    this.onInitialQuestionAnswer = this.onInitialQuestionAnswer.bind(this);
+    this.onGenderInput = this.onGenderInput.bind(this);
+    this.onHandleAvatar = this.onHandleAvatar.bind(this);
     this.move = this.move.bind(this);
     this.setTurn = this.setTurn.bind(this);
     this.joinRoom = this.joinRoom.bind(this);
@@ -53,11 +55,15 @@ class PapayaApp extends React.Component {
     this.nextMainPage = this.nextMainPage.bind(this);
     this.previousMainPage = this.previousMainPage.bind(this);
     this.setVal = this.setVal.bind(this);
-    this.takePhoto = this.takePhoto.bind(this);
-    this.setRef = this.setRef.bind(this);
     this.setFuzzy = this.setFuzzy.bind(this);
  		this.state = {mainForm:{peer:{loading:1},practice:0},
                   practiceRound:-1,
+                  gender: null,
+                  answer_q1: null,
+                  answer_q2: null,
+                  answer_q3: null,
+                  answer_q4: null,
+                  showAvatar: false,
                   boardload:false,
                   estimate: null, 
                   fuzzy: null, 
@@ -73,6 +79,26 @@ class PapayaApp extends React.Component {
                   reply:{reply:1,msg:""},
                   replyEstimate:null,
                   password:""};
+  }
+  
+  onInitialQuestionAnswer(e){ 
+    this.setState(JSON.parse('{ "answer_'+e.currentTarget.name+'":'+parseInt(e.currentTarget.value)+' }'), function() {
+      this.onHandleAvatar();
+    });
+  }
+  
+  onGenderInput(e){
+    this.setState({ gender: e.currentTarget.value }, function() {
+      this.onHandleAvatar();
+    });
+  }
+  
+  onHandleAvatar(){
+    if(this.state.gender!=null&&this.state.answer_q1!=null&&this.state.answer_q2!=null&&this.state.answer_q3!=null&&this.state.answer_q4!=null){
+      var avatar_score = (this.state.answer_q1+this.state.answer_q2+this.state.answer_q3+this.state.answer_q4)/2;
+      if(avatar_score<=2) this.setState({showAvatar:'/img/'+this.state.gender.toLowerCase()+'_0.png'});
+      else this.setState({showAvatar:'/img/'+this.state.gender.toLowerCase()+'_1.png'});  
+    }
   }
 
   componentDidMount() { 
@@ -278,7 +304,15 @@ class PapayaApp extends React.Component {
 
   StartTheGame(){
     let mainForm = this.state.mainForm
-    if(this.state.password === 'eir' && mainForm.name && mainForm.seat && mainForm.image){
+    if(this.state.password === 'eir' && mainForm.name && mainForm.seat && this.state.gender!=null&&this.state.answer_q1!=null&&this.state.answer_q2!=null&&this.state.answer_q3!=null&&this.state.answer_q4!=null){
+      var canvas = document.createElement("canvas");
+      canvas.width = document.getElementById('myAvatar').naturalWidth;
+      canvas.height = document.getElementById('myAvatar').naturalHeight;
+      var ctx = canvas.getContext("2d");
+      ctx.drawImage(document.getElementById('myAvatar'), 0, 0);
+      var dataURL = canvas.toDataURL("image/png");
+      this.state.mainForm.image = dataURL;
+
       if(this.state.mainFormPage===1){
         p('starting game')
         //Send peerestimate and start game
@@ -287,20 +321,10 @@ class PapayaApp extends React.Component {
       if(this.state.mainFormPage===0){
         socket.emit('saveProfile', this.state.mainForm)
       }
-    }
-  }
-
-  takePhoto(){
-    if(this.state.mainForm.image){
-      this.setVal('image',null)
     }else{
-      this.setVal('image',this.capture())
+      alert('Make sure you have entered your ID, seat and that all of the questions have been answered.');
     }
-   
   }
-
-
-
 
   sendDemography(){
     console.log("SENDING DEMO")
@@ -367,26 +391,10 @@ class PapayaApp extends React.Component {
     
   }
 
-  setRef(webcam){
-    this.webcam = webcam;
-  }
-
-  capture(){
-    const imageSrc = this.webcam.getScreenshot();
-    return imageSrc
-  };
-
   mainForm(){
-    const videoConstraints = {
-      width: 350,
-      height: 350,
-      facingMode: 'user',
-    };
-
     let seatNumbers=config.seatAmount
     let mf = this.state.mainForm
     let seats = []
-    // let rooms = ['A','B']
 
     let rooms = config.AisC ? ['B', 'C'] : ['A','B']
  
@@ -399,29 +407,77 @@ class PapayaApp extends React.Component {
     return (
       <Panel style={{ width: "550px", margin:"100px auto"}}  header={"Sliding Puzzle"} bsStyle="primary">
     
-      What is your first name?<br/>
+      What is your unique ID:<br/>
       <FormControl
         type="text"
         value={mf.name}
-        placeholder="Type in your first name"
+        placeholder="Type in the ID that was given to you as part of the enrollment"
         onChange={this.handleVal}
         autoComplete="false"
       />
-      <br/><br/>
+      <br/>
+      What is your gender:
+      <div>
+        <input type="radio" value="Male" name="gender" onChange={this.onGenderInput} /> Male &nbsp;
+        <input type="radio" value="Female" name="gender" onChange={this.onGenderInput} /> Female
+      </div>
+      <br />
+      Over the last 2 weeks, how often have you been bothered by any of the following problems?
+      <ul>
+        <li>
+          Little interest or pleasure in doing things
+          <div>
+            <input type="radio" value="0" name="q1" onChange={this.onInitialQuestionAnswer} /> Not at all &nbsp;
+            <input type="radio" value="1" name="q1" onChange={this.onInitialQuestionAnswer} /> Several days &nbsp;
+            <input type="radio" value="2" name="q1" onChange={this.onInitialQuestionAnswer} /> More than half of days &nbsp;
+            <input type="radio" value="3" name="q1" onChange={this.onInitialQuestionAnswer} /> Nearly every day
+          </div>
+        </li>
+        <li>
+          Feeling down, depressed, or hopeless
+          <div>
+            <input type="radio" value="0" name="q2" onChange={this.onInitialQuestionAnswer} /> Not at all &nbsp;
+            <input type="radio" value="1" name="q2" onChange={this.onInitialQuestionAnswer} /> Several days &nbsp;
+            <input type="radio" value="2" name="q2" onChange={this.onInitialQuestionAnswer} /> More than half of days &nbsp;
+            <input type="radio" value="3" name="q2" onChange={this.onInitialQuestionAnswer} /> Nearly every day
+          </div>
+        </li>
+      </ul>
+      <br />
+      Over the last 2 weeks, how often have you been bothered by the following problems?
+      <ul>
+        <li>
+          Feeling nervous, anxious or on edge
+          <div>
+            <input type="radio" value="0" name="q3" onChange={this.onInitialQuestionAnswer} /> Not at all &nbsp;
+            <input type="radio" value="1" name="q3" onChange={this.onInitialQuestionAnswer} /> Several days &nbsp;
+            <input type="radio" value="2" name="q3" onChange={this.onInitialQuestionAnswer} /> More than half of days &nbsp;
+            <input type="radio" value="3" name="q3" onChange={this.onInitialQuestionAnswer} /> Nearly every day
+          </div>
+        </li>
+        <li>
+          Not being able to stop or control worrying
+          <div>
+            <input type="radio" value="0" name="q4" onChange={this.onInitialQuestionAnswer} /> Not at all &nbsp;
+            <input type="radio" value="1" name="q4" onChange={this.onInitialQuestionAnswer} /> Several days &nbsp;
+            <input type="radio" value="2" name="q4" onChange={this.onInitialQuestionAnswer} /> More than half of days &nbsp;
+            <input type="radio" value="3" name="q4" onChange={this.onInitialQuestionAnswer} /> Nearly every day
+          </div>
+        </li>
+      </ul>
+      
+      <div style={{ display: this.state.showAvatar===false ? "none" : "unset"}}>
+        Based on your previous responses you have been assigned the avatar below: <br />
+        <center><img id="myAvatar" src={this.state.showAvatar} style={{ width: '50%' }} /></center>
+      </div>
+      
+      <br/>
       Your seat number<br/>
       <DropdownButton bsSize="large" id="seat" title={self.roomTranslation(mf.seat)}>
         {seats.map((seat,i)=> <MenuItem  onClick={function(){self.setVal('seat',seat)}} key={"seat"+i} eventKey="1">{seat}</MenuItem>)}
       </DropdownButton>
       <br/><br/>
-         {self.state.mainForm.image ? <img style={{margin: "auto",display: "block",borderRadius:'50%'}} src={"data:image/jpeg;" + self.state.mainForm.image} className="avatar"/>  : <Webcam style={{margin: "auto",display: "block",borderRadius:'50%'}}
-          audio={false}
-          height={350}
-          ref={this.setRef}
-          screenshotFormat="image/jpeg"
-          width={350}
-          videoConstraints={videoConstraints}
-        />}
-        <Button bsStyle="primary" onClick={self.takePhoto}>{self.state.mainForm.image ? "Take a New Photo" : "Snap Photo"}</Button>
+         
         <br/>
         <br/>
       Researcher Signature (please wait for the researcher to sign you in)
@@ -492,7 +548,7 @@ class PapayaApp extends React.Component {
     let toRender =  Object.keys(self.state.mainForm.peer).map((peer)=>
     <div key={peer+"-person"}>
       <br/><br/>
-      <img style={{borderRadius:'50%', display:'block',margin:'auto'}} width={300} height={300} src={"img/people/" + peer +".jpg"} className="avatar"/>
+      <img style={{borderRadius:'50%', display:'block',margin:'auto'}} width={300} height={300} src={"img/people/" + peer +".png"} className="avatar"/>
       <br/><p style={{textAlign: 'center',fontWeight: 'bold',fontSize: 'large'}}>{peer} - Estimate average contribution</p>
       <NumericInput onChange={function(val){self.handlePeerEstimate(val, peer)}} value={self.state.mainForm.peer[peer]}  style={{wrap: {fontSize: 32,textAlign:'center', width: '100%'}}} min={0} max={100}  format={this.myFormat} />
       <br/>
@@ -531,7 +587,7 @@ class PapayaApp extends React.Component {
           {this.state.opponent!=="" && !gameOver ? (
             <div style={{height:130}}>Playing together with&nbsp; 
             <b>{this.state.opponent}</b>{this.state.yourturn ? (<b> - Your turn!</b>): (<b> - Waiting...</b>)}
-            <img style={{opacity:(this.state.yourturn? 0.4: 1), borderRadius:'50%', display: 'block', float: 'left', marginTop:10,borderWidth: 3, borderColor: 'white', borderStyle: 'solid'}} width={100} height={100} src={"img/people/" + this.state.opponent +".jpg"} className="avatar"/>
+            <img style={{opacity:(this.state.yourturn? 0.4: 1), borderRadius:'50%', display: 'block', float: 'left', marginTop:10,borderWidth: 3, borderColor: 'white', borderStyle: 'solid'}} width={100} height={100} src={"img/people/" + this.state.opponent +".png"} className="avatar"/>
               {!replyState && !gameOver ? <div style={{float:'right',marginTop:10}}>
                 <ReactCountdownClock seconds={240+self.state.seconds}
                        color="#FFFFFF"
