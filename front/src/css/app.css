@@ -52,10 +52,6 @@ body {
     position: absolute !important;
 }
 
-.avatar{
-    filter: brightness(300%);
-}
-
 .gauge{
     float:right !important;
 }
