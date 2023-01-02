@@ -103,7 +103,7 @@ class Admin extends React.Component {
      fetch(apiURL+'/csv')
       .then((err, res)=>{
         this.setState({csv:true})
-        window.open(apiURL.split(':3030')[0]+"/img/all-"+self.state.currentsession.session+".csv","_blank")
+        window.open(window.location.protocol+"//"+window.location.host+"/img/all-"+self.state.currentsession.session+".csv","_blank")
       });
   }
 
@@ -113,7 +113,7 @@ class Admin extends React.Component {
      fetch(apiURL+'/movescsv')
       .then((err, res)=>{
         this.setState({movescsv:true})
-        window.open(apiURL.split(':3030')[0]+"/img/moves-"+self.state.currentsession.session+".csv","_blank")
+        window.open(window.location.protocol+"//"+window.location.host+"/img/moves-"+self.state.currentsession.session+".csv","_blank")
       });
   }
   
@@ -123,7 +123,7 @@ class Admin extends React.Component {
      fetch(apiURL+'/compressalldata')
       .then((err, res)=>{
         this.setState({compressalldata:true})
-        window.open(apiURL.split(':3030')[0]+"/"+self.state.currentsession.session+".zip","_blank")
+        window.open(window.location.protocol+"//"+window.location.host+"/"+self.state.currentsession.session+".zip","_blank")
       });
   }
   
