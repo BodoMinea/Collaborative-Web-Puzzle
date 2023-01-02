@@ -1235,7 +1235,7 @@ function allscoredmoves(rew,res, callback){
           merged[i].nr = i
         })
 
-        fs.writeFile("../public/img/allscoredmoves-" + config.database.index, merged, function(err) {
+        fs.writeFile("../public/img/allscoredmoves-" + config.database.index, merged.toString(), function(err) {
           if(err) {
             p(err+" Save failed!".red);
           }else{
