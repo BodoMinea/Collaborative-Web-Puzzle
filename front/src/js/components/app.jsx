@@ -305,13 +305,7 @@ class PapayaApp extends React.Component {
   StartTheGame(){
     let mainForm = this.state.mainForm
     if(this.state.password === 'eir' && mainForm.name && mainForm.seat && this.state.gender!=null&&this.state.answer_q1!=null&&this.state.answer_q2!=null&&this.state.answer_q3!=null&&this.state.answer_q4!=null){
-      var canvas = document.createElement("canvas");
-      canvas.width = document.getElementById('myAvatar').naturalWidth;
-      canvas.height = document.getElementById('myAvatar').naturalHeight;
-      var ctx = canvas.getContext("2d");
-      ctx.drawImage(document.getElementById('myAvatar'), 0, 0);
-      var dataURL = canvas.toDataURL("image/png");
-      this.state.mainForm.image = dataURL;
+      
 
       if(this.state.mainFormPage===1){
         p('starting game')
@@ -319,6 +313,13 @@ class PapayaApp extends React.Component {
         socket.emit('peerestimate', this.state.mainForm)
       }
       if(this.state.mainFormPage===0){
+        var canvas = document.createElement("canvas");
+        canvas.width = document.getElementById('myAvatar').naturalWidth;
+        canvas.height = document.getElementById('myAvatar').naturalHeight;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(document.getElementById('myAvatar'), 0, 0);
+        var dataURL = canvas.toDataURL("image/png");
+        this.state.mainForm.image = dataURL;
         socket.emit('saveProfile', this.state.mainForm)
       }
     }else{
