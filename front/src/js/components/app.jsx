@@ -34,6 +34,8 @@ class PapayaApp extends React.Component {
 
 	constructor(props){
     super(props);
+    this.precondition_step = this.precondition_step.bind(this);
+    this.final_screen = this.final_screen.bind(this);
     this.onInitialQuestionAnswer = this.onInitialQuestionAnswer.bind(this);
     this.onGenderInput = this.onGenderInput.bind(this);
     this.onHandleAvatar = this.onHandleAvatar.bind(this);
@@ -58,6 +60,7 @@ class PapayaApp extends React.Component {
     this.setFuzzy = this.setFuzzy.bind(this);
  		this.state = {mainForm:{peer:{loading:1},practice:0},
                   practiceRound:-1,
+                  shownStep: 1,
                   gender: null,
                   answer_q1: null,
                   answer_q2: null,
@@ -79,6 +82,18 @@ class PapayaApp extends React.Component {
                   reply:{reply:1,msg:""},
                   replyEstimate:null,
                   password:""};
+  }
+  
+  final_screen(){
+    if(this.state.password === 'eir' && this.state.mainForm.name && this.state.mainForm.seat && this.state.gender!=null&&this.state.answer_q1!=null&&this.state.answer_q2!=null&&this.state.answer_q3!=null&&this.state.answer_q4!=null){
+      this.precondition_step();
+    }else{
+      alert('Make sure you have entered your ID, seat and that all of the questions have been answered.');
+    }
+  }
+  
+  precondition_step(){
+    this.setState({ shownStep: this.state.shownStep+1});
   }
   
   onInitialQuestionAnswer(e){ 
@@ -405,9 +420,45 @@ class PapayaApp extends React.Component {
       }
     }
     var self = this
-    return (
+    return (      
       <Panel style={{ width: "550px", margin:"100px auto"}}  header={"Sliding Puzzle"} bsStyle="primary">
+      
+      <div style={this.state.shownStep === 1 ? {} : { display: 'none' }}>
+        <p>You are being asked to provide consent to participate in this research study. Participation is voluntary. You can say yes or no. If you say yes now you can still change your mind later.</p>
+        <p>This research is being done to better understand beliefs and behaviors in group work among university students. You are being asked to participate because you are a student at NYU Abu Dhabi.</p>
+        <p>You will be asked to complete a survey about your wellbeing and play a puzzle on your own and together with a teammate.&nbsp; You will also be asked questions your individual and your teammate&rsquo;s contribution to the solving of the puzzle. Your specific responses may be anonymously shared with the other participants throughout the game, but never in a way in which you could be identified as the respondent.</p>
+        <p>Participation in both the survey and game will involve maximum 120 minutes of your time.</p>
+        <p>We believe the risks for participation in this study are minimal. Some of the questions ask you to reflect on your wellbeing which may cause you to feel upset. Please note that none of the questions asked are leading to a diagnostic and that none of the researchers involved with this study are medical professionals. Please keep in mind that you can reach out to the NYU Wellness Exchange that operates (24/7) by calling +971 2-628-5555. A complete list of resources has been shared with you together with this form. You can also stop the game at any time.</p>
+        <p>Your participation in this research is voluntary and will have no effect on your academic standing.</p>
+        <p>You will not benefit directly from participating in this study. We hope to learn more about group work among university students, and your participation will help us to do that. In exchange to your participation, you will be financially compensated with a small subsistence allowance. The payment from solving the game will work the following way: each puzzle has an equal probability to be randomly picked as the puzzle based for payment. If the puzzle that was randomly selected was solved by a certain pair, each participant from the pair will earn 10AED extra. Each solved puzzle in the individual round will generate an additional 1AED, so if you managed to solve 5 practice puzzles in 4 minutes, you will earn 4AED and so forth. Finally, one contribution question will be randomly selected, and if you provided an answer close enough to the actual contributions on these questions, you will earn an additional 5AED per question. On top of this, everyone will be guaranteed a show up fee of 50AED. Additionally, the top performing participant across all game sessions will receive a prize worth 700AED. You will be receiving the payment in the form of a voucher via the email shared previously.</p>
+        <p><em>&nbsp;</em></p>
+        <p>All of your responses will be held in confidence and in a secure location. All electronic files (e.g., database, spreadsheet, etc.) containing identifiable information will be password protected.&nbsp; Any computer hosting such files will also have password protection to prevent access by unauthorized users. &nbsp; Only the researchers involved in this study will have access to the information you provide. None of that information will be shared with Student Affairs or other university entities. Study results will report findings as averages across all businesses and never name you directly. Information, not containing personal identifiers, may be used in future research or shared with other researchers.</p>
+        <p>If you have further questions about this study or if you have a research-related problem, you may contact the principal investigator prof. Morgan Hardy at morgan.hardy@nyu.edu or the student researcher Ana Radu at amrr1190@nyu.edu or +971501475701.</p>
+        <p>If you have any questions concerning your rights as a research participant, you may contact the New York University Abu Dhabi Institutional Review Board (IRB) at irbnyuad@nyu.edu.</p>
+        <p style={{'textAlign':'center'}}>Do you consent to be part of this study?</p>
+        <p style={{'textAlign':'center'}}><Button bsStyle="success" onClick={this.precondition_step}>Yes</Button></p>
+      </div>
+      
+      <div style={this.state.shownStep === 2 ? {} : { display: 'none' }}>
+        <p>Thank you for you consent. Today you will be solving sliding puzzles. On the screen you will see a square with 9 smaller pieces inside - 8 of them numbered from 1- 8 and one empty square. Your task is to bring the numbers into the final position seen below:</p>
+        
+        <p style={{'textAlign':'center'}}><img width="30%" src={"img/example.png"}/></p>
+        
+        
+        
+        <p>You are manuvering the numbers inside the square by clicking on the number you would like to move into the empty spot. Please try your best to solve every puzzle. The time limit for each round is 4minues or until the puzzle is solved.</p>
+        
+        <p>In round 0 (practice round) you will be solving as many puzzles as you can alone with the computer. </p>
+        
+        <p>After the pracice round you will be randomly assigned a teammate. You and your teammate will alternatively make moves in order to solve the puzzle. You aren't able to communicate with your teammate. Please try your best to collaborate with your teammate and solve each puzzle.</p>
+        
+        <p>The game will end once you have played with every other participant. 
+          </p>
+
+        <p style={{'textAlign':'center'}}><Button bsStyle="success" onClick={this.precondition_step}>Continue</Button></p>
+      </div>
     
+      <div style={this.state.shownStep === 3 ? {} : { display: 'none' }}>
       What is your unique ID:<br/>
       <FormControl
         type="text"
@@ -467,11 +518,6 @@ class PapayaApp extends React.Component {
         </li>
       </ul>
       
-      <div style={{ display: this.state.showAvatar===false ? "none" : "unset"}}>
-        Based on your previous responses you have been assigned the avatar below: <br />
-        <center><img id="myAvatar" src={this.state.showAvatar} style={{ width: '50%' }} /></center>
-      </div>
-      
       <br/>
       Your seat number<br/>
       <DropdownButton bsSize="large" id="seat" title={self.roomTranslation(mf.seat)}>
@@ -491,8 +537,25 @@ class PapayaApp extends React.Component {
         onChange={this.handlePassword}
       />
       <br/>
-      <Button bsStyle="primary" onClick={this.StartTheGame}>Start Practice Round</Button>
+        <p style={{'textAlign':'center'}}><Button bsStyle="success" onClick={this.final_screen}>Continue</Button></p>
+      </div>
+      
+      <div style={this.state.shownStep === 4 ? {} : { display: 'none' }}>
+        <div style={{ display: this.state.showAvatar===false ? "none" : "unset"}}>
+          Based on your previous responses you have been assigned the avatar below: <br />
+          <center><img id="myAvatar" src={this.state.showAvatar} style={{ width: '50%' }} /></center><br/>
+          Here are all the possible avatars available in this game:
+          <center>
+            <img id="myAvatar" src="img/female_0.png" style={{ width: '24%' }} />
+            <img id="myAvatar" src="img/female_1.png" style={{ width: '24%' }} />
+            <img id="myAvatar" src="img/male_0.png" style={{ width: '24%' }} />
+            <img id="myAvatar" src="img/male_1.png" style={{ width: '24%' }} />
+          </center>
+        </div><br/>
+        <p style={{'textAlign':'center'}}><Button bsStyle="primary" onClick={this.StartTheGame}>Start Practice Round</Button></p>
+      </div>
       </Panel>
+      
       )
   }
 
