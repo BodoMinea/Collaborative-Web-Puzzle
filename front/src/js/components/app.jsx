@@ -34,6 +34,7 @@ class PapayaApp extends React.Component {
 
 	constructor(props){
     super(props);
+    window.onbeforeunload = ()=>"Refreshing the page will result in abandoning the game without the possibility to re-join.";
     this.precondition_step = this.precondition_step.bind(this);
     this.final_screen = this.final_screen.bind(this);
     this.onInitialQuestionAnswer = this.onInitialQuestionAnswer.bind(this);
